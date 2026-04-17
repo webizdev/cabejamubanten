@@ -1,0 +1,27 @@
+# Docker
+Dockerfile
+docker-compose.yml
+
+# IDE/System
+.gemini/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Other
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+
+# Scratch and log files
+/brain/
+/scratch/
+task.md
+implementation_plan.md
+walkthrough.md
+research_notes.md
+analysis_results.md
+experiment_results.md

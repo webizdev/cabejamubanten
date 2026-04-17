@@ -1,0 +1,13 @@
+# Robots.txt for https://cabejamubanten.my.id/
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /config/
+Disallow: /admin.php
+Disallow: /install.php
+Disallow: /db.php
+Disallow: /api.php
+
+# Sitemap location
+Sitemap: https://cabejamubanten.my.id/sitemap.xml

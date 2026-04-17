@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | PT Cabe Jamu Banten</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --jamu-green: #1b4332;
+            --jamu-gold: #c89d10;
+            --jamu-earth: #fdf8f1;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar-link.active {
+            background-color: var(--jamu-green);
+            color: white;
+            box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="overflow-hidden">
+    <!-- Auth Guard -->
+    <div id="loginOverlay" class="fixed inset-0 z-[100] bg-[#1b4332] flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-white rounded-3xl p-10 shadow-2xl text-center">
+
+            <h1 class="text-2xl font-bold mb-2">Admin Access</h1>
+            <p class="text-gray-500 mb-8">Please enter your credentials to manage PT Cabe Jamu Banten</p>
+            <input type="password" id="adminPass" placeholder="Enter Password" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-[#1b4332] outline-none mb-4 text-center">
+            <button onclick="checkAuth()" class="w-full bg-[#1b4332] text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-[#c89d10] transition-all">Unlock Dashboard</button>
+        </div>
+    </div>
+
+    <div class="flex h-screen opacity-0 transition-opacity duration-500" id="mainDashboard">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-white border-r border-gray-100 flex flex-col">
+            <div class="p-8">
+                <div class="flex items-center gap-3 mb-10">
+
+                    <div>
+                        <h2 class="font-extrabold text-[#1b4332] leading-tight text-sm">PT CABE JAMU</h2>
+                        <p class="text-[10px] text-[#c89d10] font-bold tracking-[0.2em]">CONTROL CENTER</p>
+                    </div>
+                </div>
+
+                <nav class="space-y-2">
+                    <button onclick="switchTab('hero')" class="sidebar-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-magic w-5"></i> Hero Section
+                    </button>
+                    <button onclick="switchTab('budidaya')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-seedling w-5"></i> Slider Budidaya
+                    </button>
+                    <button onclick="switchTab('produk')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-box-open w-5"></i> Produk Utama
+                    </button>
+                    <button onclick="switchTab('layanan')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-graduation-cap w-5"></i> Layanan
+                    </button>
+                    <button onclick="switchTab('stats')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-chart-line w-5"></i> Statistik
+                    </button>
+                    <button onclick="switchTab('kontak')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-headset w-5"></i> Kontak
+                    </button>
+                    <button onclick="switchTab('social')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+                        <i class="fas fa-share-nodes w-5"></i> Media Sosial
+                    </button>
+                </nav>
+            </div>
+
+            <div class="mt-auto p-8 border-t border-gray-50 flex flex-col gap-3">
+                <a href="index.html" target="_blank" class="flex items-center justify-center gap-2 w-full py-3 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-[#c89d10] transition-all">
+                    <i class="fas fa-external-link-alt"></i> Lihat Website
+                </a>
+                <button onclick="resetData()" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase tracking-widest text-center">Reset to Default</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-12">
+            <header class="flex justify-between items-center mb-12">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900" id="currentSectionTitle">Hero Section</h1>
+                    <p class="text-gray-400 mt-1">Customize your website content in real-time.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div id="saveStatus" class="hidden items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-full text-xs font-bold border border-green-100 animate-pulse">
+                        <i class="fas fa-check-circle"></i> Berhasil Disimpan
+                    </div>
+                    <button onclick="saveChanges()" class="px-8 py-3 bg-[#1b4332] text-white rounded-2xl font-bold shadow-xl shadow-green-900/10 hover:scale-105 transition-all">SAVE CHANGES</button>
+                </div>
+            </header>
+
+            <div id="contentArea" class="max-w-5xl">
+                <!-- Tab content will be rendered here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- DATA ARCHITECTURE ---
+        const DEFAULT_DATA = {
+            hero: {
+                tag: "Eksportir & Produsen Terpercaya 2026",
+                title: "Melestarikan Warisan Jamu Banten Melalui Cabe Jamu",
+                sub: "Dedikasi kami dalam mengolah rempah tradisional Indonesia menjadi produk berkualitas tinggi untuk kesehatan dunia.",
+                bg: "assets/img-2.png"
+            },
+            cultivation: [
+                { title: "Lahan Perkebunan Cabe Jamu", img: "assets/img-3.jpeg" },
+                { title: "Persiapan Bibit Unggul", img: "assets/img-4.jpeg" },
+                { title: "Penanaman Organik", img: "assets/img-5.jpeg" },
+                { title: "Sistem Pengairan Modern", img: "assets/img-6.jpeg" },
+                { title: "Pertumbuhan Vegetatif", img: "assets/img-7.jpeg" },
+                { title: "Pemantauan Kesehatan Tanaman", img: "assets/img-8.jpeg" },
+                { title: "Proses Pembungaan", img: "assets/img-9.jpeg" },
+                { title: "Buah Cabe Jamu Muda", img: "assets/img-10.jpeg" },
+                { title: "Perawatan Intensif", img: "assets/img-11.jpeg" },
+                { title: "Teknik Pemangkasan", img: "assets/img-12.jpeg" },
+                { title: "Pemberian Nutrisi Alami", img: "assets/img-13.jpeg" },
+                { title: "Kematangan Buah Optimal", img: "assets/img-14.jpeg" },
+                { title: "Masa Panen Raya", img: "assets/img-15.jpeg" },
+                { title: "Pemetikan Tradisional", img: "assets/img-16.jpeg" },
+                { title: "Hasil Panen Berkualitas", img: "assets/img-17.jpeg" },
+                { title: "Sortasi Grade A", img: "assets/img-18.jpeg" },
+                { title: "Pembersihan Pasca Panen", img: "assets/img-19.jpeg" },
+                { title: "Persiapan Pengeringan", img: "assets/img-20.jpeg" },
+                { title: "Penjemuran Higienis", img: "assets/img-21.jpeg" },
+                { title: "Kontrol Kadar Air", img: "assets/img-22.jpeg" },
+                { title: "Pengeringan Sinar Matahari", img: "assets/img-23.jpeg" },
+                { title: "Hasil Kering Sempurna", img: "assets/img-24.jpeg" },
+                { title: "Aroma Rempah Khas", img: "assets/img-25.jpeg" },
+                { title: "Kualitas Rempah Banten", img: "assets/img-26.jpeg" },
+                { title: "Penyimpanan Gudang Steril", img: "assets/img-27.jpeg" },
+                { title: "Proses Penggilingan Bubuk", img: "assets/img-28.jpeg" },
+                { title: "Uji Laboratorium Mandiri", img: "assets/img-29.jpeg" },
+                { title: "Pelatihan Petani Mitra", img: "assets/img-30.jpeg" },
+                { title: "Edukasi Budidaya", img: "assets/img-31.jpeg" },
+                { title: "Kunjungan Kebun", img: "assets/img-32.jpeg" },
+                { title: "Kerjasama Kemitraan", img: "assets/img-33.jpeg" },
+                { title: "Distribusi Nasional", img: "assets/img-34.jpeg" },
+                { title: "Persiapan Ekspor Luar Negeri", img: "assets/img-35.jpeg" },
+                { title: "Keunggulan Cabe Jamu Banten", img: "assets/img-36.jpeg" },
+                { title: "Warisan Rempah Nusantara", img: "assets/img-37.jpeg" },
+                { title: "Pusat Pelatihan Cabe Jamu", img: "assets/img-38.jpeg" }
+            ],
+            products: [
+                { id: 1, title: "Cabe Jamu (Long Pepper)", desc: "Piper Retrofractum Vahl pilihan, tersedia dalam bentuk kering utuh dan bubuk murni.", img: "assets/img-39.jpeg", badge: "Premium" },
+                { id: 2, title: "Kopi Tunjuk Langit", desc: "Ramuan kopi herbal khusus untuk stamina pria dewasa. Formula tradisional dengan sentuhan teknologi modern.", img: "assets/img-40.jpeg", badge: "Best Seller" },
+                { id: 3, title: "Sapan Tea", desc: "Minuman herbal eksotis dari kayu Secang pilihan. Memberikan kesegaran alami dan kaya akan antioksidan.", img: "assets/img-41.jpeg", badge: "Terbaru" }
+            ],
+            services: {
+                title: "Pusat Budidaya & <br><span class='text-[#c89d10]'>Pelatihan Cabe Jamu</span>",
+                desc: "Kami tidak hanya menjual produk, tetapi juga mengedukasi masyarakat untuk melestarikan tanaman berkhasiat ini.",
+                items: [
+                    { icon: "fa-seedling", title: "Jual Bibit Cabe Jamu", desc: "Bibit unggul hasil riset perkebunan mandiri." },
+                    { icon: "fa-graduation-cap", title: "Pelatihan & Workshop", desc: "Materi budidaya Cabe Jamu serta teknik pengolahan." },
+                    { icon: "fa-handshake", title: "Kemitraan & Kerjasama", desc: "Membuka peluang ekspor dan supply chain bagi petani lokal." }
+                ],
+                gallery: [
+                    "assets/img-42.jpeg",
+                    "assets/img-38.jpeg"
+                ]
+            },
+            stats: [
+                { val: "15+", label: "Tahun Pengalaman" },
+                { val: "100%", label: "Organik Alami" },
+                { val: "500+", label: "Mitra Petani" },
+                { val: "24/7", label: "Dukungan Teknis" }
+            ],
+            contact: {
+                title: "Mulai Kerjasama Dengan Kami",
+                desc: "Hubungi tim kami untuk konsultasi produk atau pendaftaran pelatihan.",
+                wa: "6281229203967",
+                all_wa: ["081229203967", "085712306365", "081386578656"],
+                email: "cabejamubanten@gmail.com",
+                address: "Serang, Banten, Indonesia",
+                formOptions: ["Beli Cabe Jamu", "Beli Kopi Tunjuk Langit", "Beli Sapan Tea", "Pelatihan Budidaya", "Kemitraan Bisnis"]
+            },
+            social: [
+                { platform: "Facebook", icon: "fa-facebook-f", link: "#" },
+                { platform: "Instagram", icon: "fa-instagram", link: "#" },
+                { platform: "LinkedIn", icon: "fa-linkedin-in", link: "#" }
+            ]
+        };
+
+        let currentData = JSON.parse(localStorage.getItem('cabeJamuProData')) || JSON.parse(JSON.stringify(DEFAULT_DATA));
+        let activeTab = 'hero';
+
+        // --- AUTH ---
+        function checkAuth() {
+            if (document.getElementById('adminPass').value === 'cabe') {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainDashboard').classList.add('opacity-100');
+                renderTab('hero');
+            } else {
+                alert('Invalid Password');
+            }
+        }
+
+        // --- CORE FUNCTIONS ---
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.sidebar-link').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase().includes(tab.toLowerCase())) btn.classList.add('active');
+            });
+            document.getElementById('currentSectionTitle').innerText = tab.charAt(0).toUpperCase() + tab.slice(1).replace('stats', 'Statistik').replace('kontak', 'Kontak');
+            renderTab(tab);
+        }
+
+        function renderTab(tab) {
+            const area = document.getElementById('contentArea');
+            area.innerHTML = '';
+            
+            let html = '';
+            if (tab === 'hero') {
+                html = `
+                <div class="grid gap-8 fade-in">
+                    <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-gray-50">
+                        <h3 class="font-bold text-lg mb-6 border-b pb-4">Headline & Content</h3>
+                        <div class="space-y-6">
+                            <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-2">Tagline Promo</label><input type="text" value="${currentData.hero.tag}" onchange="updateData('hero.tag', this.value)" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-[#c89d10]/20"></div>
+                            <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-2">Main Headline</label><input type="text" value="${currentData.hero.title}" onchange="updateData('hero.title', this.value)" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-[#c89d10]/20"></div>
+                            <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-2">Subheadline</label><textarea onchange="updateData('hero.sub', this.value)" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-[#c89d10]/20 h-32">${currentData.hero.sub}</textarea></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-gray-50">
+                        <h3 class="font-bold text-lg mb-6 border-b pb-4">Hero Media</h3>
+                        <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-2">Background Image URL</label><input type="text" value="${currentData.hero.bg}" onchange="updateData('hero.bg', this.value)" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-[#c89d10]/20"></div>
+                        <img src="${currentData.hero.bg}" class="mt-4 h-40 w-full object-cover rounded-2xl border-2 border-gray-100 shadow-inner">
+                    </div>
+                </div>`;
+            } else if (tab === 'budidaya') {
+                html = `<div class="grid grid-cols-2 gap-4 fade-in">`;
+                currentData.cultivation.forEach((c, i) => {
+                    html += `
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-50 relative group">
+                        <button onclick="deleteItem('cultivation', ${i})" class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="fas fa-trash"></i></button>
+                        <img src="${c.img}" class="h-40 w-full object-cover rounded-2xl mb-4 bg-gray-50">
+                        <input type="text" value="${c.title}" onchange="currentData.cultivation[${i}].title = this.value" class="w-full px-3 py-2 text-xs font-bold border-none bg-gray-50 rounded-lg outline-none mb-2" placeholder="Image Title">
+                        <input type="text" value="${c.img}" onchange="currentData.cultivation[${i}].img = this.value; renderTab('budidaya')" class="w-full px-3 py-2 text-[10px] border-none bg-gray-50 rounded-lg outline-none" placeholder="Image URL">
+                    </div>`;
+                });
+                html += `<button onclick="addItem('cultivation')" class="col-span-2 p-10 border-2 border-dashed border-[#c89d10] text-[#c89d10] font-bold rounded-[2rem] hover:bg-yellow-50 transition-all">+ Add New Cultivation Gallery Item</button></div>`;
+            } else if (tab === 'produk') {
+                html = `<div class="space-y-6 fade-in">`;
+                currentData.products.forEach((p, i) => {
+                    html += `
+                    <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-gray-100 flex gap-10 relative group">
+                        <button onclick="deleteItem('products', ${i})" class="absolute top-6 right-6 text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-all">DELETE</button>
+                        <div class="w-1/3">
+                            <img src="${p.img}" class="h-64 w-full object-cover rounded-[2rem] shadow-xl mb-4">
+                            <input type="text" value="${p.img}" onchange="currentData.products[${i}].img = this.value; renderTab('produk')" class="w-full px-4 py-3 text-[10px] bg-gray-50 rounded-xl outline-none" placeholder="Image URL">
+                        </div>
+                        <div class="flex-1 space-y-4">
+                            <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-1">Product Title</label><input type="text" value="${p.title}" onchange="currentData.products[${i}].title = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none"></div>
+                            <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-1">Badge</label><input type="text" value="${p.badge}" onchange="currentData.products[${i}].badge = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none"></div>
+                            <div><label class="block text-[10px] font-extrabold uppercase tracking-widest text-[#1b4332] mb-1">Short Description</label><textarea onchange="currentData.products[${i}].desc = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none h-24">${p.desc}</textarea></div>
+                        </div>
+                    </div>`;
+                });
+                html += `<button onclick="addItem('products')" class="w-full p-8 border-2 border-dashed border-[#c89d10] text-[#c89d10] font-bold rounded-[2rem]">+ Create New Product Listing</button></div>`;
+            } else if (tab === 'layanan') {
+                html = `
+                <div class="grid gap-8 fade-in">
+                    <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-gray-50">
+                        <h3 class="font-bold text-lg mb-6 border-b pb-4">Service Section Header</h3>
+                        <div class="space-y-4">
+                            <div><label class="block text-[10px] font-extrabold text-[#1b4332] mb-1">Title (HTML)</label><input type="text" value="${currentData.services.title}" onchange="currentData.services.title = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none"></div>
+                            <div><label class="block text-[10px] font-extrabold text-[#1b4332] mb-1">Description</label><textarea onchange="currentData.services.desc = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none h-20">${currentData.services.desc}</textarea></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-6">
+                        ${currentData.services.items.map((it, i) => `
+                        <div class="bg-white p-8 rounded-[2rem] border border-gray-100">
+                             <input type="text" value="${it.icon}" onchange="currentData.services.items[${i}].icon = this.value" class="w-full px-4 py-2 text-xs bg-gray-50 rounded-lg mb-4" placeholder="Icon Class (FontAwesome)">
+                             <input type="text" value="${it.title}" onchange="currentData.services.items[${i}].title = this.value" class="w-full px-4 py-2 font-bold bg-gray-50 rounded-lg mb-2" placeholder="Item Title">
+                             <textarea onchange="currentData.services.items[${i}].desc = this.value" class="w-full px-4 py-3 text-xs bg-gray-50 rounded-lg h-24" placeholder="Description">${it.desc}</textarea>
+                        </div>`).join('')}
+                    </div>
+                </div>`;
+            } else if (tab === 'stats') {
+                html = `<div class="grid grid-cols-4 gap-6 fade-in">
+                    ${currentData.stats.map((s, i) => `
+                    <div class="bg-white p-8 rounded-[2rem] border border-gray-100 text-center">
+                        <input type="text" value="${s.val}" onchange="currentData.stats[${i}].val = this.value" class="w-full text-center text-3xl font-extrabold text-[#1b4332] bg-transparent focus:outline-none mb-2">
+                        <input type="text" value="${s.label}" onchange="currentData.stats[${i}].label = this.value" class="w-full text-center text-[10px] font-bold uppercase tracking-widest text-[#c89d10] bg-transparent focus:outline-none">
+                    </div>`).join('')}
+                </div>`;
+            } else if (tab === 'kontak') {
+                html = `
+                <div class="grid gap-8 fade-in">
+                    <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-gray-50 grid grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-[#1b4332] mb-2 uppercase tracking-widest">Main WhatsApp CTA (62...)</label>
+                            <input type="text" value="${currentData.contact.wa}" onchange="currentData.contact.wa = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none">
+                            <p class="text-[9px] text-gray-400 mt-2">* Used for navigation and floating buttons.</p>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-[#1b4332] mb-2 uppercase tracking-widest">Email Address</label>
+                            <input type="text" value="${currentData.contact.email}" onchange="currentData.contact.email = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-extrabold text-[#1b4332] mb-2 uppercase tracking-widest">All Contact Numbers (Comma separated)</label>
+                            <input type="text" value="${currentData.contact.all_wa.join(', ')}" onchange="currentData.contact.all_wa = this.value.split(',').map(s=>s.trim())" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none">
+                        </div>
+                        <div class="col-span-2">
+                             <label class="block text-[10px] font-extrabold text-[#1b4332] mb-2 uppercase tracking-widest">Office Address</label>
+                             <input type="text" value="${currentData.contact.address}" onchange="currentData.contact.address = this.value" class="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none">
+                        </div>
+                    </div>
+                </div>`;
+            } else if (tab === 'social') {
+                html = `<div class="grid gap-4 fade-in">`;
+                currentData.social.forEach((s, i) => {
+                    html += `
+                    <div class="bg-white p-6 rounded-2xl flex items-center gap-6 border border-gray-50">
+                        <div class="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center"><i class="fab ${s.icon} text-[#1b4332]"></i></div>
+                        <div class="flex-1 grid grid-cols-3 gap-4">
+                            <input type="text" value="${s.platform}" onchange="currentData.social[${i}].platform = this.value" class="px-4 py-2 bg-gray-50 rounded-lg text-sm font-bold">
+                            <input type="text" value="${s.icon}" onchange="currentData.social[${i}].icon = this.value" class="px-4 py-2 bg-gray-50 rounded-lg text-xs">
+                            <input type="text" value="${s.link}" onchange="currentData.social[${i}].link = this.value" class="px-4 py-2 bg-gray-50 rounded-lg text-xs">
+                        </div>
+                        <button onclick="deleteItem('social', ${i})" class="text-red-400 p-2"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                });
+                html += `<button onclick="addItem('social')" class="p-6 border-2 border-dashed border-[#c89d10] text-[#c89d10] font-bold rounded-2xl">+ Add New Social Link</button></div>`;
+            }
+
+            area.innerHTML = html;
+        }
+
+        // --- CRUD ACTIONS ---
+        function updateData(path, val) {
+            const keys = path.split('.');
+            let obj = currentData;
+            for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
+            obj[keys[keys.length - 1]] = val;
+        }
+
+        function addItem(type) {
+            if (type === 'products') {
+                currentData.products.push({ id: Date.now(), title: "New Product", desc: "Short description...", img: "assets/img-39.jpeg", badge: "New" });
+            } else if (type === 'cultivation') {
+                currentData.cultivation.push({ title: "New Activity", img: "assets/img-3.jpeg" });
+            } else if (type === 'social') {
+                currentData.social.push({ platform: "Social", icon: "fa-link", link: "#" });
+            }
+            renderTab(activeTab);
+        }
+
+        function deleteItem(type, i) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                currentData[type].splice(i, 1);
+                renderTab(activeTab);
+            }
+        }
+
+        function saveChanges() {
+            localStorage.setItem('cabeJamuProData', JSON.stringify(currentData));
+            const status = document.getElementById('saveStatus');
+            status.classList.remove('hidden');
+            status.classList.add('flex');
+            setTimeout(() => {
+                status.classList.remove('flex');
+                status.classList.add('hidden');
+            }, 3000);
+        }
+
+        function resetData() {
+            if (confirm('RESIKO TINGGI: Kembalikan semua ke setelan pabrik? Data yang anda edit akan hilang secara permanen.')) {
+                localStorage.removeItem('cabeJamuProData');
+                currentData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                renderTab(activeTab);
+                alert('Selesai! Data telah di-reset ke nilai asli bawaan.');
+            }
+        }
+    </script>
+</body>
+
+</html>
